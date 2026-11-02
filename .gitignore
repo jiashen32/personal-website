@@ -37,3 +37,52 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+# GitHub Actions
+.github/workflows/*.log
+.github/logs/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microphone usage on macOS
+.mic
+
+# Local Chrome User Data
+user-data
+
+# Pickling files on Windows
+*.pyc
+
+# Test files
+__fixtures__
+__integration__
+__mocks__
+__tests__
+
+# Dependencies
+vendor/
+
+# Environment variables
+.env.local
+.env.*.local
+
+# Build outputs
+build/
+out/
+*.tgz
+
+# IDE
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project

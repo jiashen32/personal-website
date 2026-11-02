@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url'
-import { resolve } from 'path'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
@@ -24,14 +23,6 @@ export default defineConfig(({ mode }) => ({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: mode === 'development',
-    // 代码分割优化
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['vue', 'vue-router', 'pinia'],
-          utils: ['lodash-es'],
-        },
-      },
-    },
   },
 }))
+
