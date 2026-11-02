@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 // 个人简介数据
 const profile = ref({
@@ -11,7 +11,7 @@ const profile = ref({
   experience: '3+ 年'
 })
 
-// 核心技能
+// 核心技能（应用 60-30-10 配色法则）
 const skills = ref([
   { name: 'Vue 3/TypeScript', level: 95, category: 'frontend' },
   { name: 'React/Next.js', level: 85, category: 'frontend' },
@@ -62,22 +62,37 @@ const scrollTo = (id: string) => {
   const element = document.querySelector(id)
   if (element) element.scrollIntoView({ behavior: 'smooth' })
 }
+
+// 动效：元素进入视野时添加动画
+onMounted(() => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate-fade-in')
+      }
+    })
+  }, { threshold: 0.1 })
+
+  document.querySelectorAll('.animate-on-scroll').forEach(el => {
+    observer.observe(el)
+  })
+})
 </script>
 
 <template>
-  <main class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-    <!-- Hero Section -->
+  <main class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <!-- Hero Section - 使用渐变背景 -->
     <section class="container mx-auto px-4 py-12 md:py-20">
       <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-        <div class="flex-1 space-y-6 text-center md:text-left">
+        <div class="flex-1 space-y-6 text-center md:text-left animate-on-scroll">
           <div>
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
               你好，我是 {{ profile.name }}
             </h1>
-            <p class="text-xl md:text-2xl text-gray-600 mb-2">
+            <p class="text-xl md:text-2xl text-gray-700 mb-2 font-medium">
               {{ profile.title }}
             </p>
-            <p class="text-lg text-gray-500">
+            <p class="text-lg text-gray-600 leading-relaxed">
               {{ profile.bio }}
             </p>
           </div>
@@ -85,56 +100,69 @@ const scrollTo = (id: string) => {
           <div class="flex flex-wrap gap-4 justify-center md:justify-start">
             <button
               @click="scrollTo('#projects')"
-              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              查看作品
+              查看作品 ←
             </button>
             <button
               @click="scrollTo('#contact')"
-              class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 transition-colors font-medium"
+              class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-blue-500 hover:text-blue-600 transition-all duration-300 font-medium shadow-sm hover:shadow-md"
             >
-              联系我
+              联系我 →
             </button>
           </div>
 
           <div class="flex items-center gap-6 justify-center md:justify-start text-sm text-gray-500">
             <div class="flex items-center gap-2">
-              <span>📍</span>
+              <span class="text-blue-600">📍</span>
               <span>{{ profile.location }}</span>
             </div>
             <div class="flex items-center gap-2">
-              <span>💼</span>
+              <span class="text-purple-600">💼</span>
               <span>{{ profile.experience }} 年经验</span>
             </div>
           </div>
         </div>
 
-        <div class="flex-shrink-0">
-          <div class="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white shadow-xl">
-            <img :src="profile.avatar" :alt="profile.name" class="w-full h-full object-cover" />
+        <div class="flex-shrink-0 animate-on-scroll">
+          <div class="relative group">
+            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-25 group-hover:opacity-75 transition-opacity duration-300"></div>
+            <div class="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+              <img :src="profile.avatar" :alt="profile.name" class="w-full h-full object-cover" />
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Skills Section -->
-    <section class="container mx-auto px-4 py-12 bg-white rounded-2xl shadow-sm mx-4 md:mx-8">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">
+    <!-- Skills Section - 使用渐变色卡片 -->
+    <section class="container mx-auto px-4 py-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8 animate-on-scroll">
         技术栈
       </h2>
       <div class="grid md:grid-cols-3 gap-6">
         <div
           v-for="skill in skills"
           :key="skill.name"
-          class="p-6 bg-gray-50 rounded-xl hover:shadow-lg transition-shadow"
+          class="p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 animate-on-scroll border border-gray-100"
+          :class="{
+            'bg-gradient-to-br from-blue-50 to-indigo-50': skill.category === 'frontend',
+            'bg-gradient-to-br from-emerald-50 to-teal-50': skill.category === 'backend',
+            'bg-gradient-to-br from-orange-50 to-amber-50': skill.category === 'devops'
+          }"
         >
-          <div class="flex justify-between items-center mb-2">
-            <h3 class="font-semibold text-gray-900">{{ skill.name }}</h3>
-            <span class="text-sm text-gray-500">{{ skill.level }}%</span>
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="font-semibold text-gray-900 text-lg">{{ skill.name }}</h3>
+            <span class="text-sm text-gray-500 font-medium">{{ skill.level }}%</span>
           </div>
-          <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div
-              class="bg-blue-600 h-2 rounded-full transition-all duration-1000"
+              class="h-3 rounded-full transition-all duration-1000"
+              :class="{
+                'bg-gradient-to-r from-blue-500 to-indigo-600': skill.category === 'frontend',
+                'bg-gradient-to-r from-emerald-500 to-teal-600': skill.category === 'backend',
+                'bg-gradient-to-r from-orange-500 to-amber-600': skill.category === 'devops'
+              }"
               :style="{ width: skill.level + '%' }"
             ></div>
           </div>
@@ -144,39 +172,42 @@ const scrollTo = (id: string) => {
 
     <!-- Projects Section -->
     <section id="projects" class="container mx-auto px-4 py-12 mt-8">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">
+      <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8 animate-on-scroll">
         项目展示
       </h2>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           v-for="project in projects"
           :key="project.id"
-          class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300"
+          class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 animate-on-scroll"
         >
-          <img
-            :src="project.image"
-            :alt="project.title"
-            class="w-full h-48 object-cover"
-          />
+          <div class="relative overflow-hidden">
+            <img
+              :src="project.image"
+              :alt="project.title"
+              class="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-300"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
           <div class="p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">
+            <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
               {{ project.title }}
             </h3>
-            <p class="text-gray-600 mb-4">
+            <p class="text-gray-600 mb-4 leading-relaxed">
               {{ project.description }}
             </p>
             <div class="flex flex-wrap gap-2 mb-4">
               <span
                 v-for="tech in project.tech"
                 :key="tech"
-                class="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm"
+                class="px-3 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 rounded-full text-sm font-medium"
               >
                 {{ tech }}
               </span>
             </div>
             <a
               :href="project.href"
-              class="inline-block px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+              class="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-300 font-medium shadow-md"
             >
               查看详情 →
             </a>
@@ -187,11 +218,11 @@ const scrollTo = (id: string) => {
 
     <!-- Contact Section -->
     <section id="contact" class="container mx-auto px-4 py-12 mt-8">
-      <h2 class="text-3xl font-bold text-center text-gray-900 mb-8">
+      <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8 animate-on-scroll">
         联系我
       </h2>
       <div class="max-w-2xl mx-auto space-y-4">
-        <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm">
+        <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md hover:shadow-lg transition-shadow animate-on-scroll">
           <span class="text-2xl">📧</span>
           <div>
             <p class="font-semibold text-gray-900">电子邮箱</p>
@@ -199,7 +230,7 @@ const scrollTo = (id: string) => {
           </div>
         </div>
 
-        <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm">
+        <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md hover:shadow-lg transition-shadow animate-on-scroll">
           <span class="text-2xl">🔗</span>
           <div>
             <p class="font-semibold text-gray-900">GitHub</p>
@@ -207,7 +238,7 @@ const scrollTo = (id: string) => {
           </div>
         </div>
 
-        <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm">
+        <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md hover:shadow-lg transition-shadow animate-on-scroll">
           <span class="text-2xl">💼</span>
           <div>
             <p class="font-semibold text-gray-900">LinkedIn</p>
@@ -215,7 +246,7 @@ const scrollTo = (id: string) => {
           </div>
         </div>
 
-        <div class="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm">
+        <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md hover:shadow-lg transition-shadow animate-on-scroll">
           <span class="text-2xl">📱</span>
           <div>
             <p class="font-semibold text-gray-900">电话</p>
@@ -225,11 +256,11 @@ const scrollTo = (id: string) => {
       </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="container mx-auto px-4 py-8 text-center text-gray-500">
-      <p>© {{ new Date().getFullYear() }} {{ profile.name }}. All rights reserved.</p>
-      <p class="text-sm mt-2">
-        Built with Vue 3 + Vite + GitHub Pages
+    <!-- Footer - 使用渐变背景 -->
+    <footer class="container mx-auto px-4 py-8 text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl">
+      <p class="text-lg">© {{ new Date().getFullYear() }} {{ profile.name }}. All rights reserved.</p>
+      <p class="text-sm mt-2 opacity-90">
+        🚀 Built with Vue 3 + Vite + Tailwind CSS + Gitee Pages
       </p>
     </footer>
   </main>
@@ -240,6 +271,25 @@ main {
   min-height: 100vh;
 }
 
+/* 动效增强 */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 延迟动画 */
+.animate-on-scroll:nth-child(2) { animation-delay: 0.2s; }
+.animate-on-scroll:nth-child(3) { animation-delay: 0.4s; }
+.animate-on-scroll:nth-child(4) { animation-delay: 0.6s; }
+
 /* 响应式优化 */
 @media (max-width: 768px) {
   .text-4xl {
@@ -248,6 +298,10 @@ main {
 
   .text-5xl {
     font-size: 3rem;
+  }
+
+  .container {
+    padding: 0 1rem;
   }
 }
 </style>
