@@ -18,6 +18,12 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue'),
     },
   ],
+  scrollBehavior(to, _from, savedPosition) {
+    if (savedPosition) return savedPosition
+    // 顶部导航约 64px，留出 80px 让锚点标题不被遮挡
+    if (to.hash) return { el: to.hash, top: 80, behavior: 'smooth' }
+    return { top: 0 }
+  },
 })
 
 export default router

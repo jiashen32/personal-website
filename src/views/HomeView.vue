@@ -1,308 +1,324 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
+import SkillGroupPanel from '@/components/SkillGroupPanel.vue'
+import { useReveal } from '@/composables/useReveal'
+import { about, profile, projects, skillGroups } from '@/data/profile'
+import type { Project } from '@/data/profile'
 
-// 个人简介数据
-const profile = ref({
-  name: '你的名字',
-  title: '前端工程师 | 全栈开发者',
-  bio: '热爱创造优雅、高效的用户体验，专注于构建现代 Web 应用。拥有 3 年前端开发经验，擅长 Vue.js、TypeScript 和现代构建工具。',
-  avatar: 'https://via.placeholder.com/150',
-  location: '中国北京',
-  experience: '3+ 年'
-})
+useReveal()
 
-// 核心技能（应用 60-30-10 配色法则）
-const skills = ref([
-  { name: 'Vue 3/TypeScript', level: 95, category: 'frontend' },
-  { name: 'React/Next.js', level: 85, category: 'frontend' },
-  { name: 'Node.js/Express', level: 80, category: 'backend' },
-  { name: '数据库 (MySQL/PostgreSQL)', level: 75, category: 'backend' },
-  { name: 'Git/CI/CD', level: 90, category: 'devops' },
-  { name: 'Docker/部署', level: 70, category: 'devops' }
-])
+// 首屏标题中对「简单好用」做强调，其余文字仍来自数据文件
+const accentPhrase = '简单好用'
+const headlinePieces = profile.headline.split(accentPhrase)
 
-// 项目展示
-const projects = ref([
-  {
-    id: 1,
-    title: '企业级数据可视化平台',
-    description: '使用 Vue 3 + TypeScript + ECharts 构建的实时数据监控平台',
-    tech: ['Vue 3', 'TypeScript', 'ECharts', 'WebSocket'],
-    image: 'https://via.placeholder.com/400x250',
-    href: '#project1'
-  },
-  {
-    id: 2,
-    title: '电商小程序商城',
-    description: '基于 Uniapp 开发的跨平台电商应用，支持微信/支付宝小程序',
-    tech: ['Uniapp', 'Vue 3', 'Pinia', 'TailwindCSS'],
-    image: 'https://via.placeholder.com/400x250',
-    href: '#project2'
-  },
-  {
-    id: 3,
-    title: '云文档协作系统',
-    description: '实时协作编辑的在线文档工具，支持多人同时编辑',
-    tech: ['WebSocket', 'OP-TextField', 'Redis', 'MySQL'],
-    image: 'https://via.placeholder.com/400x250',
-    href: '#project3'
-  }
-])
+const [aboutLead = '', aboutMore = ''] = about.paragraphs
 
-// 联系方式
-const contact = ref({
-  email: 'your.email@example.com',
-  github: 'https://github.com/yourusername',
-  linkedin: 'https://linkedin.com/in/yourname',
-  phone: '138-xxxx-xxxx'
-})
-
-// 平滑滚动
-const scrollTo = (id: string) => {
-  const element = document.querySelector(id)
-  if (element) element.scrollIntoView({ behavior: 'smooth' })
+const statusLabel: Record<Project['status'], string> = {
+  live: '已上线',
+  building: '开发中',
 }
 
-// 动效：元素进入视野时添加动画
-onMounted(() => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-fade-in')
-      }
-    })
-  }, { threshold: 0.1 })
-
-  document.querySelectorAll('.animate-on-scroll').forEach(el => {
-    observer.observe(el)
-  })
-})
+const githubHandle = profile.github.split('/').filter(Boolean).pop() ?? profile.handle
+const linkedinHandle = profile.linkedin.split('/').filter(Boolean).pop() ?? ''
 </script>
 
 <template>
-  <main class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-    <!-- Hero Section - 使用渐变背景 -->
-    <section class="container mx-auto px-4 py-12 md:py-20">
-      <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-        <div class="flex-1 space-y-6 text-center md:text-left animate-on-scroll">
+  <main id="main">
+    <!-- 首屏 -->
+    <section class="relative overflow-hidden border-b border-line">
+      <div class="hero-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
+
+      <div
+        class="relative mx-auto grid max-w-[1180px] gap-14 px-6 py-20 md:grid-cols-[1.12fr_0.88fr] md:items-end md:gap-16 md:px-10 md:py-28"
+      >
+        <div>
+          <p class="mono-label flex items-center gap-3" data-reveal>
+            <span class="h-px w-8 bg-accent" aria-hidden="true"></span>
+            Portfolio / {{ profile.updated }}
+          </p>
+
+          <h1
+            class="mt-8 max-w-[11em] text-[clamp(2.5rem,6vw,4.75rem)] font-semibold leading-[1.12] tracking-[-0.04em] text-ink"
+            data-reveal
+            data-delay="1"
+          >
+            <template v-for="(piece, index) in headlinePieces" :key="index">
+              {{ piece }}<span
+                v-if="index < headlinePieces.length - 1"
+                class="text-accent"
+              >{{ accentPhrase }}</span>
+            </template>
+          </h1>
+
+          <p
+            class="mt-7 max-w-xl text-sm leading-8 text-ink-soft md:text-base"
+            data-reveal
+            data-delay="2"
+          >
+            {{ profile.bio }}
+          </p>
+
+          <div class="mt-9 flex flex-wrap items-center gap-3" data-reveal data-delay="3">
+            <a href="#work" class="btn-solid">
+              查看作品
+              <span aria-hidden="true">↓</span>
+            </a>
+            <RouterLink to="/about" class="btn-ghost">
+              关于我
+              <span aria-hidden="true">→</span>
+            </RouterLink>
+          </div>
+
+          <dl
+            class="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-6"
+            data-reveal
+            data-delay="4"
+          >
+            <div>
+              <dt class="mono-label">地点</dt>
+              <dd class="mt-2 text-sm text-ink-soft">{{ profile.location }}</dd>
+            </div>
+            <div>
+              <dt class="mono-label">经验</dt>
+              <dd class="mt-2 text-sm text-ink-soft">{{ profile.experience }}</dd>
+            </div>
+            <div>
+              <dt class="mono-label">方向</dt>
+              <dd class="mt-2 text-sm text-ink-soft">{{ profile.openTo }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- 签名元素：资料铭牌 -->
+        <aside class="plate" data-reveal data-delay="3" aria-label="个人资料">
+          <div
+            class="flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-mute"
+          >
+            <span>Profile / 001</span>
+            <span class="inline-flex items-center gap-2 text-accent">
+              <span class="status-dot pulse" aria-hidden="true"></span>
+              {{ profile.availability }}
+            </span>
+          </div>
+
+          <div class="mt-12 border-b border-line pb-7">
+            <p class="font-mono text-[10px] tracking-[0.32em] text-ink-mute">XIAO NING</p>
+            <p class="mt-3 text-[2.75rem] font-semibold leading-none tracking-[-0.04em]">
+              {{ profile.name }}
+            </p>
+            <p class="mt-3 text-sm text-ink-soft">{{ profile.role }}</p>
+          </div>
+
+          <dl class="mt-7 grid grid-cols-[1fr_auto] items-baseline gap-y-3.5 text-sm">
+            <dt class="text-ink-mute">交付项目</dt>
+            <dd class="text-right font-mono tabular-nums">{{ profile.deliveredProjects }}</dd>
+            <dt class="text-ink-mute">开发经验</dt>
+            <dd class="text-right">{{ profile.experience }}</dd>
+            <dt class="text-ink-mute">求职方向</dt>
+            <dd class="text-right">{{ profile.openTo }}</dd>
+            <dt class="text-ink-mute">工作地点</dt>
+            <dd class="text-right">{{ profile.workLocation }}</dd>
+            <dt class="text-ink-mute">到岗时间</dt>
+            <dd class="text-right">{{ profile.notice }}</dd>
+          </dl>
+
+          <p
+            class="mt-6 border-t border-line pt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute"
+          >
+            Updated {{ profile.updated }}
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 作品 -->
+    <section id="work" class="scroll-mt-20 border-b border-line">
+      <div class="mx-auto max-w-[1180px] px-6 py-20 md:px-10 md:py-24">
+        <header
+          class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
+          data-reveal
+        >
           <div>
-            <h1 class="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
-              你好，我是 {{ profile.name }}
-            </h1>
-            <p class="text-xl md:text-2xl text-gray-700 mb-2 font-medium">
-              {{ profile.title }}
-            </p>
-            <p class="text-lg text-gray-600 leading-relaxed">
-              {{ profile.bio }}
-            </p>
+            <p class="mono-label">01 / Selected Work</p>
+            <h2 class="section-title">作品</h2>
           </div>
+          <p class="max-w-sm text-sm leading-7 text-ink-soft">
+            三个有代表性的项目。我关心的不只是完成需求，还有首屏速度、协作效率和半年后的可维护性。
+          </p>
+        </header>
 
-          <div class="flex flex-wrap gap-4 justify-center md:justify-start">
-            <button
-              @click="scrollTo('#projects')"
-              class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+        <div class="mt-12 border-t border-line">
+          <a
+            v-for="(project, index) in projects"
+            :key="project.id"
+            :href="project.href"
+            target="_blank"
+            rel="noreferrer"
+            class="group grid gap-5 border-b border-line py-8 transition-colors hover:bg-surface/80 md:grid-cols-[76px_1.7fr_1fr_150px] md:items-center md:gap-8 md:px-4"
+            data-reveal
+          >
+            <span
+              class="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute"
             >
-              查看作品 ←
-            </button>
-            <button
-              @click="scrollTo('#contact')"
-              class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:border-blue-500 hover:text-blue-600 transition-all duration-300 font-medium shadow-sm hover:shadow-md"
-            >
-              联系我 →
-            </button>
-          </div>
+              {{ String(index + 1).padStart(2, '0') }} / {{ project.year }}
+            </span>
 
-          <div class="flex items-center gap-6 justify-center md:justify-start text-sm text-gray-500">
-            <div class="flex items-center gap-2">
-              <span class="text-blue-600">📍</span>
-              <span>{{ profile.location }}</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-purple-600">💼</span>
-              <span>{{ profile.experience }} 年经验</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex-shrink-0 animate-on-scroll">
-          <div class="relative group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-25 group-hover:opacity-75 transition-opacity duration-300"></div>
-            <div class="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white shadow-2xl">
-              <img :src="profile.avatar" :alt="profile.name" class="w-full h-full object-cover" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Skills Section - 使用渐变色卡片 -->
-    <section class="container mx-auto px-4 py-12">
-      <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8 animate-on-scroll">
-        技术栈
-      </h2>
-      <div class="grid md:grid-cols-3 gap-6">
-        <div
-          v-for="skill in skills"
-          :key="skill.name"
-          class="p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 animate-on-scroll border border-gray-100"
-          :class="{
-            'bg-gradient-to-br from-blue-50 to-indigo-50': skill.category === 'frontend',
-            'bg-gradient-to-br from-emerald-50 to-teal-50': skill.category === 'backend',
-            'bg-gradient-to-br from-orange-50 to-amber-50': skill.category === 'devops'
-          }"
-        >
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="font-semibold text-gray-900 text-lg">{{ skill.name }}</h3>
-            <span class="text-sm text-gray-500 font-medium">{{ skill.level }}%</span>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-            <div
-              class="h-3 rounded-full transition-all duration-1000"
-              :class="{
-                'bg-gradient-to-r from-blue-500 to-indigo-600': skill.category === 'frontend',
-                'bg-gradient-to-r from-emerald-500 to-teal-600': skill.category === 'backend',
-                'bg-gradient-to-r from-orange-500 to-amber-600': skill.category === 'devops'
-              }"
-              :style="{ width: skill.level + '%' }"
-            ></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="container mx-auto px-4 py-12 mt-8">
-      <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8 animate-on-scroll">
-        项目展示
-      </h2>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div
-          v-for="project in projects"
-          :key="project.id"
-          class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 animate-on-scroll"
-        >
-          <div class="relative overflow-hidden">
-            <img
-              :src="project.image"
-              :alt="project.title"
-              class="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-300"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          </div>
-          <div class="p-6">
-            <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-              {{ project.title }}
-            </h3>
-            <p class="text-gray-600 mb-4 leading-relaxed">
-              {{ project.description }}
-            </p>
-            <div class="flex flex-wrap gap-2 mb-4">
-              <span
-                v-for="tech in project.tech"
-                :key="tech"
-                class="px-3 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 rounded-full text-sm font-medium"
+            <div>
+              <h3
+                class="text-xl font-semibold tracking-tight transition-colors group-hover:text-accent md:text-2xl"
               >
-                {{ tech }}
+                {{ project.title }}
+              </h3>
+              <p class="mt-2 max-w-xl text-sm leading-7 text-ink-soft">
+                {{ project.description }}
+              </p>
+              <p class="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-mute">
+                指标 / <span class="text-accent">{{ project.highlight }}</span>
+              </p>
+            </div>
+
+            <ul class="flex flex-wrap gap-2" aria-label="技术栈">
+              <li v-for="tech in project.tech" :key="tech" class="tag">{{ tech }}</li>
+            </ul>
+
+            <div
+              class="flex items-center justify-between gap-4 md:flex-col md:items-end md:justify-center md:gap-3"
+            >
+              <span
+                class="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em]"
+                :class="project.status === 'live' ? 'text-accent' : 'text-signal'"
+              >
+                <span class="status-dot" aria-hidden="true"></span>
+                {{ statusLabel[project.status] }}
+              </span>
+              <span
+                class="text-lg text-ink-mute transition-transform duration-300 group-hover:translate-x-1 group-hover:text-accent"
+                aria-hidden="true"
+              >
+                →
               </span>
             </div>
-            <a
-              :href="project.href"
-              class="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-300 font-medium shadow-md"
-            >
-              查看详情 →
-            </a>
-          </div>
+          </a>
         </div>
       </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="container mx-auto px-4 py-12 mt-8">
-      <h2 class="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-8 animate-on-scroll">
-        联系我
-      </h2>
-      <div class="max-w-2xl mx-auto space-y-4">
-        <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md hover:shadow-lg transition-shadow animate-on-scroll">
-          <span class="text-2xl">📧</span>
+    <!-- 能力 -->
+    <section id="skills" class="scroll-mt-20 border-b border-line">
+      <div class="mx-auto max-w-[1180px] px-6 py-20 md:px-10 md:py-24">
+        <header
+          class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between"
+          data-reveal
+        >
           <div>
-            <p class="font-semibold text-gray-900">电子邮箱</p>
-            <p class="text-gray-600">{{ contact.email }}</p>
+            <p class="mono-label">02 / Capabilities</p>
+            <h2 class="section-title">能力</h2>
           </div>
-        </div>
+          <p class="max-w-sm text-sm leading-7 text-ink-soft">
+            日常主力是 Vue 3 与 TypeScript，也熟悉 React 生态与服务端接口设计，能独立把产品从原型做到上线。
+          </p>
+        </header>
 
-        <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md hover:shadow-lg transition-shadow animate-on-scroll">
-          <span class="text-2xl">🔗</span>
-          <div>
-            <p class="font-semibold text-gray-900">GitHub</p>
-            <p class="text-gray-600">{{ contact.github }}</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md hover:shadow-lg transition-shadow animate-on-scroll">
-          <span class="text-2xl">💼</span>
-          <div>
-            <p class="font-semibold text-gray-900">LinkedIn</p>
-            <p class="text-gray-600">{{ contact.linkedin }}</p>
-          </div>
-        </div>
-
-        <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl shadow-md hover:shadow-lg transition-shadow animate-on-scroll">
-          <span class="text-2xl">📱</span>
-          <div>
-            <p class="font-semibold text-gray-900">电话</p>
-            <p class="text-gray-600">{{ contact.phone }}</p>
-          </div>
+        <div class="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+          <SkillGroupPanel
+            v-for="group in skillGroups"
+            :key="group.label"
+            :group="group"
+            data-reveal
+          />
         </div>
       </div>
     </section>
 
-    <!-- Footer - 使用渐变背景 -->
-    <footer class="container mx-auto px-4 py-8 text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl">
-      <p class="text-lg">© {{ new Date().getFullYear() }} {{ profile.name }}. All rights reserved.</p>
-      <p class="text-sm mt-2 opacity-90">
-        🚀 Built with Vue 3 + Vite + Tailwind CSS + Gitee Pages
-      </p>
-    </footer>
+    <!-- 关于 -->
+    <section class="border-b border-line">
+      <div
+        class="mx-auto grid max-w-[1180px] gap-8 px-6 py-20 md:grid-cols-[0.55fr_1.45fr] md:gap-16 md:px-10 md:py-24"
+      >
+        <p class="mono-label md:pt-2" data-reveal>03 / About</p>
+        <div>
+          <p
+            class="text-xl font-medium leading-[1.75] tracking-[-0.01em] text-ink md:text-2xl"
+            data-reveal
+          >
+            {{ aboutLead }}
+          </p>
+          <p class="mt-6 max-w-2xl text-sm leading-8 text-ink-soft" data-reveal data-delay="1">
+            {{ aboutMore }}
+          </p>
+          <RouterLink to="/about" class="link-arrow mt-8" data-reveal data-delay="2">
+            完整经历与技能
+            <span aria-hidden="true">→</span>
+          </RouterLink>
+        </div>
+      </div>
+    </section>
+
+    <!-- 联系 -->
+    <section id="contact" class="scroll-mt-20 bg-night text-paper">
+      <div
+        class="mx-auto grid max-w-[1180px] gap-12 px-6 py-20 md:grid-cols-[1.15fr_0.85fr] md:items-end md:px-10 md:py-24"
+      >
+        <div data-reveal>
+          <p class="font-mono text-[10px] uppercase tracking-[0.2em] text-paper/60">
+            04 / Contact
+          </p>
+          <h2 class="mt-6 text-4xl font-semibold leading-[1.15] tracking-[-0.03em] md:text-5xl">
+            聊聊下一件事。
+          </h2>
+          <p class="mt-5 max-w-md text-sm leading-7 text-paper/70">
+            目前开放前端 / 全栈机会，{{ profile.workLocation }}。邮件通常会在一个工作日内回复。
+          </p>
+          <a
+            :href="`mailto:${profile.email}`"
+            class="mt-8 inline-flex items-center gap-3 border border-paper/25 px-5 py-3 text-sm transition-colors hover:border-paper hover:bg-paper hover:text-night"
+          >
+            {{ profile.email }}
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <dl
+          class="grid gap-x-8 gap-y-5 border-t border-paper/15 pt-6 sm:grid-cols-2"
+          data-reveal
+          data-delay="1"
+        >
+          <div>
+            <dt class="font-mono text-[10px] uppercase tracking-[0.18em] text-paper/60">GitHub</dt>
+            <dd class="mt-2">
+              <a
+                :href="profile.github"
+                target="_blank"
+                rel="noreferrer"
+                class="text-sm text-paper/85 transition-colors hover:text-paper"
+              >
+                @{{ githubHandle }}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt class="font-mono text-[10px] uppercase tracking-[0.18em] text-paper/60">LinkedIn</dt>
+            <dd class="mt-2">
+              <a
+                :href="profile.linkedin"
+                target="_blank"
+                rel="noreferrer"
+                class="text-sm text-paper/85 transition-colors hover:text-paper"
+              >
+                {{ linkedinHandle }}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt class="font-mono text-[10px] uppercase tracking-[0.18em] text-paper/60">Location</dt>
+            <dd class="mt-2 text-sm text-paper/85">{{ profile.workLocation }}</dd>
+          </div>
+          <div>
+            <dt class="font-mono text-[10px] uppercase tracking-[0.18em] text-paper/60">Notice</dt>
+            <dd class="mt-2 text-sm text-paper/85">{{ profile.notice }}</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
   </main>
 </template>
-
-<style scoped>
-main {
-  min-height: 100vh;
-}
-
-/* 动效增强 */
-.animate-on-scroll {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 延迟动画 */
-.animate-on-scroll:nth-child(2) { animation-delay: 0.2s; }
-.animate-on-scroll:nth-child(3) { animation-delay: 0.4s; }
-.animate-on-scroll:nth-child(4) { animation-delay: 0.6s; }
-
-/* 响应式优化 */
-@media (max-width: 768px) {
-  .text-4xl {
-    font-size: 2.5rem;
-  }
-
-  .text-5xl {
-    font-size: 3rem;
-  }
-
-  .container {
-    padding: 0 1rem;
-  }
-}
-</style>
-
