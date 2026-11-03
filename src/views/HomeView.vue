@@ -7,9 +7,10 @@ import type { Project } from '@/data/profile'
 
 useReveal()
 
-// 首屏标题中对「简单好用」做强调，其余文字仍来自数据文件
+// 首屏标题按逗号分成两行，并对「简单好用」做强调，其余文字仍来自数据文件
 const accentPhrase = '简单好用'
-const headlinePieces = profile.headline.split(accentPhrase)
+const [headlineLead = '', headlineTail = ''] = profile.headline.split('，')
+const headlineTailPieces = headlineTail.split(accentPhrase)
 
 const [aboutLead = '', aboutMore = ''] = about.paragraphs
 
@@ -28,106 +29,109 @@ const linkedinHandle = profile.linkedin.split('/').filter(Boolean).pop() ?? ''
     <section class="relative overflow-hidden border-b border-line">
       <div class="hero-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
 
-      <div
-        class="relative mx-auto grid max-w-[1180px] gap-14 px-6 py-20 md:grid-cols-[1.12fr_0.88fr] md:items-end md:gap-16 md:px-10 md:py-28"
-      >
-        <div>
-          <p class="mono-label flex items-center gap-3" data-reveal>
-            <span class="h-px w-8 bg-accent" aria-hidden="true"></span>
-            Portfolio / {{ profile.updated }}
-          </p>
+      <div class="relative mx-auto max-w-[1180px] px-6 py-20 md:px-10 md:py-24">
+        <p class="mono-label flex items-center gap-3" data-reveal>
+          <span class="h-px w-8 bg-accent" aria-hidden="true"></span>
+          Portfolio / {{ profile.updated }}
+        </p>
 
-          <h1
-            class="mt-8 max-w-[11em] text-[clamp(2.5rem,6vw,4.75rem)] font-semibold leading-[1.12] tracking-[-0.04em] text-ink"
-            data-reveal
-            data-delay="1"
-          >
-            <template v-for="(piece, index) in headlinePieces" :key="index">
+        <h1
+          class="mt-8 text-[clamp(2rem,5.4vw,4.5rem)] font-semibold leading-[1.15] tracking-[-0.04em] text-ink"
+          data-reveal
+          data-delay="1"
+        >
+          <span class="block">{{ headlineLead }}，</span>
+          <span class="block">
+            <template v-for="(piece, index) in headlineTailPieces" :key="index">
               {{ piece }}<span
-                v-if="index < headlinePieces.length - 1"
+                v-if="index < headlineTailPieces.length - 1"
                 class="text-accent"
               >{{ accentPhrase }}</span>
             </template>
-          </h1>
+          </span>
+        </h1>
 
-          <p
-            class="mt-7 max-w-xl text-sm leading-8 text-ink-soft md:text-base"
-            data-reveal
-            data-delay="2"
-          >
-            {{ profile.bio }}
-          </p>
-
-          <div class="mt-9 flex flex-wrap items-center gap-3" data-reveal data-delay="3">
-            <a href="#work" class="btn-solid">
-              查看作品
-              <span aria-hidden="true">↓</span>
-            </a>
-            <RouterLink to="/about" class="btn-ghost">
-              关于我
-              <span aria-hidden="true">→</span>
-            </RouterLink>
-          </div>
-
-          <dl
-            class="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-6"
-            data-reveal
-            data-delay="4"
-          >
-            <div>
-              <dt class="mono-label">地点</dt>
-              <dd class="mt-2 text-sm text-ink-soft">{{ profile.location }}</dd>
-            </div>
-            <div>
-              <dt class="mono-label">经验</dt>
-              <dd class="mt-2 text-sm text-ink-soft">{{ profile.experience }}</dd>
-            </div>
-            <div>
-              <dt class="mono-label">方向</dt>
-              <dd class="mt-2 text-sm text-ink-soft">{{ profile.openTo }}</dd>
-            </div>
-          </dl>
-        </div>
-
-        <!-- 签名元素：资料铭牌 -->
-        <aside class="plate" data-reveal data-delay="3" aria-label="个人资料">
-          <div
-            class="flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-mute"
-          >
-            <span>Profile / 001</span>
-            <span class="inline-flex items-center gap-2 text-accent">
-              <span class="status-dot pulse" aria-hidden="true"></span>
-              {{ profile.availability }}
-            </span>
-          </div>
-
-          <div class="mt-12 border-b border-line pb-7">
-            <p class="font-mono text-[10px] tracking-[0.32em] text-ink-mute">XIAO NING</p>
-            <p class="mt-3 text-[2.75rem] font-semibold leading-none tracking-[-0.04em]">
-              {{ profile.name }}
+        <div class="mt-12 grid gap-12 md:grid-cols-[1.15fr_0.85fr] md:items-start md:gap-16">
+          <div>
+            <p
+              class="max-w-xl text-sm leading-8 text-ink-soft md:text-base"
+              data-reveal
+              data-delay="2"
+            >
+              {{ profile.bio }}
             </p>
-            <p class="mt-3 text-sm text-ink-soft">{{ profile.role }}</p>
+
+            <div class="mt-9 flex flex-wrap items-center gap-3" data-reveal data-delay="3">
+              <a href="#work" class="btn-solid">
+                查看作品
+                <span aria-hidden="true">↓</span>
+              </a>
+              <RouterLink to="/about" class="btn-ghost">
+                关于我
+                <span aria-hidden="true">→</span>
+              </RouterLink>
+            </div>
+
+            <dl
+              class="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-6"
+              data-reveal
+              data-delay="4"
+            >
+              <div>
+                <dt class="mono-label">地点</dt>
+                <dd class="mt-2 text-sm text-ink-soft">{{ profile.location }}</dd>
+              </div>
+              <div>
+                <dt class="mono-label">经验</dt>
+                <dd class="mt-2 text-sm text-ink-soft">{{ profile.experience }}</dd>
+              </div>
+              <div>
+                <dt class="mono-label">方向</dt>
+                <dd class="mt-2 text-sm text-ink-soft">{{ profile.openTo }}</dd>
+              </div>
+            </dl>
           </div>
 
-          <dl class="mt-7 grid grid-cols-[1fr_auto] items-baseline gap-y-3.5 text-sm">
-            <dt class="text-ink-mute">交付项目</dt>
-            <dd class="text-right font-mono tabular-nums">{{ profile.deliveredProjects }}</dd>
-            <dt class="text-ink-mute">开发经验</dt>
-            <dd class="text-right">{{ profile.experience }}</dd>
-            <dt class="text-ink-mute">求职方向</dt>
-            <dd class="text-right">{{ profile.openTo }}</dd>
-            <dt class="text-ink-mute">工作地点</dt>
-            <dd class="text-right">{{ profile.workLocation }}</dd>
-            <dt class="text-ink-mute">到岗时间</dt>
-            <dd class="text-right">{{ profile.notice }}</dd>
-          </dl>
+          <!-- 签名元素：资料铭牌 -->
+          <aside class="plate" data-reveal data-delay="3" aria-label="个人资料">
+            <div
+              class="flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-mute"
+            >
+              <span>Profile / 001</span>
+              <span class="inline-flex items-center gap-2 text-accent">
+                <span class="status-dot pulse" aria-hidden="true"></span>
+                {{ profile.availability }}
+              </span>
+            </div>
 
-          <p
-            class="mt-6 border-t border-line pt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute"
-          >
-            Updated {{ profile.updated }}
-          </p>
-        </aside>
+            <div class="mt-12 border-b border-line pb-7">
+              <p class="font-mono text-[10px] tracking-[0.32em] text-ink-mute">XIAO NING</p>
+              <p class="mt-3 text-[2.75rem] font-semibold leading-none tracking-[-0.04em]">
+                {{ profile.name }}
+              </p>
+              <p class="mt-3 text-sm text-ink-soft">{{ profile.role }}</p>
+            </div>
+
+            <dl class="mt-7 grid grid-cols-[1fr_auto] items-baseline gap-y-3.5 text-sm">
+              <dt class="text-ink-mute">交付项目</dt>
+              <dd class="text-right font-mono tabular-nums">{{ profile.deliveredProjects }}</dd>
+              <dt class="text-ink-mute">开发经验</dt>
+              <dd class="text-right">{{ profile.experience }}</dd>
+              <dt class="text-ink-mute">求职方向</dt>
+              <dd class="text-right">{{ profile.openTo }}</dd>
+              <dt class="text-ink-mute">工作地点</dt>
+              <dd class="text-right">{{ profile.workLocation }}</dd>
+              <dt class="text-ink-mute">到岗时间</dt>
+              <dd class="text-right">{{ profile.notice }}</dd>
+            </dl>
+
+            <p
+              class="mt-6 border-t border-line pt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute"
+            >
+              Updated {{ profile.updated }}
+            </p>
+          </aside>
+        </div>
       </div>
     </section>
 
@@ -157,9 +161,7 @@ const linkedinHandle = profile.linkedin.split('/').filter(Boolean).pop() ?? ''
             class="group grid gap-5 border-b border-line py-8 transition-colors hover:bg-surface/80 md:grid-cols-[76px_1.7fr_1fr_150px] md:items-center md:gap-8 md:px-4"
             data-reveal
           >
-            <span
-              class="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute"
-            >
+            <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute">
               {{ String(index + 1).padStart(2, '0') }} / {{ project.year }}
             </span>
 
