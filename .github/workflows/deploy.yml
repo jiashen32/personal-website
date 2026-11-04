@@ -1,16 +1,22 @@
-name: Deploy to Gitee Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [master]
-    paths:
-      - 'src/**'
-      - 'public/**'
-      - 'package.json'
-      - 'vite.config.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 只保留最新一次部署，避免并发写入 Pages
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -19,19 +25,35 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+      # 生产构建会读取 .env.production，base = /personal-website/
       - name: Build
-        run: npm run build -- --mode=production
+        run: npm run build
 
+      # history 模式下直接访问 /about 等深链时由 GitHub Pages 返回 404.html
       - name: Fix SPA routing
         run: cp dist/index.html dist/404.html
 
-      - name: Deploy to Gitee Pages
-        uses: gitee-actions/gitee-deploy-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          token: ${{ secrets.GITEE_TOKEN }}
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

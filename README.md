@@ -71,17 +71,25 @@ npm run type-check # vue-tsc 类型检查
 
 ## 部署
 
+托管在 **GitHub Pages**，地址为 `https://<用户名>.github.io/personal-website/`。
+推送 `master` 后由 `.github/workflows/deploy.yml` 自动构建并发布，无需手动上传 `dist/`。
+
 `base` 由环境变量 `VITE_BASE` 决定，**必须与站点的实际访问路径一致**，否则 JS/CSS 会 404：
 
 | 部署位置 | 访问地址示例 | `VITE_BASE` |
 | --- | --- | --- |
-| 仓库子路径（GitHub Pages 项目页、Gitee Pages） | `https://user.github.io/personal-website/` | `/personal-website/` |
+| 仓库子路径（GitHub Pages 项目页） | `https://user.github.io/personal-website/` | `/personal-website/` |
 | 用户根域 / 独立域名 | `https://user.github.io/` | `/` |
 
 当前 `.env.production` 中写的是 `VITE_BASE=/personal-website/`，即按仓库子路径部署。
 改完环境变量要重新 `npm run build`，构建产物里的资源前缀才会更新。
 
-路由使用 history 模式，直接访问 `/about` 这类深链需要在托管端配置 SPA 回退（GitHub Pages 用 404.html、Nginx 用 `try_files $uri $uri/ /index.html`）。
+首次部署只需在 GitHub 仓库的 **Settings → Pages → Build and deployment** 中把
+**Source** 选为 **GitHub Actions**，之后推送即自动发布。
+
+路由使用 history 模式，直接访问 `/about` 这类深链需要在托管端配置 SPA 回退。
+工作流会把 `dist/index.html` 复制为 `dist/404.html`，GitHub Pages 因此能正确回退到
+SPA，由前端路由渲染对应页面（未知路径显示 404 页）。
 
 ## 设计与内容原则
 
