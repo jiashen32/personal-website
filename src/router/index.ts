@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
+const SITE_NAME = '王甲申 · Java 后端 / AI 应用开发'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -8,14 +10,20 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: { title: SITE_NAME },
     },
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
+      // 路由级代码分割：首次访问只加载首页
       component: () => import('../views/AboutView.vue'),
+      meta: { title: `关于 · ${SITE_NAME}` },
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('../views/NotFoundView.vue'),
+      meta: { title: `页面不存在 · ${SITE_NAME}` },
     },
   ],
   scrollBehavior(to, _from, savedPosition) {
@@ -24,6 +32,11 @@ const router = createRouter({
     if (to.hash) return { el: to.hash, top: 80, behavior: 'smooth' }
     return { top: 0 }
   },
+})
+
+router.afterEach((to) => {
+  const title = to.meta.title
+  if (typeof title === 'string') document.title = title
 })
 
 export default router

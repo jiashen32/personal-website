@@ -1,259 +1,94 @@
-# Portfolio Website
+# 王甲申 · 个人主页
 
-> 我的个人求职展示网站 - 使用 Vue 3、Vite 和 Tailwind CSS 构建，以专业现代的视觉风格呈现
+求职用的个人主页：Java 后端 / AI 应用开发方向，2027 届。
+站点只做一件事——把简历里「做了什么、怎么做的、结果如何」讲清楚，而不是罗列技术名词。
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-6.0.0-blue.svg)](https://www.typescriptlang.org/)
-[![Vue.js](https://img.shields.io/badge/Vue.js-3.5.13-41B883.svg)](https://vuejs.org/)
-[![Vite](https://img.shields.io/badge/Vite-8.2.2-646CFF.svg)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4.17-06B6D4.svg)](https://tailwindcss.com/)
-[![Gitee Pages](https://img.shields.io/badge/Gitee-Pages-green.svg)](https://gitee.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+线上内容全部来自 `src/data/profile.ts` 这一个文件，改数据即可，不需要动模板。
 
-## ✨ 项目亮点
+## 技术栈
 
-- **🎨 现代配色方案** - 采用 Top 10 前端技能的配色最佳实践
-- **📱 响应式设计** - 完美适配所有设备，遵循 60-30-10 配色法则
-- **⚡ 极致性能** - Vite 构建，Gzip 后仅 40KB，首屏加载 < 2s
-- **🚀 自动化部署** - GitHub Actions 工作流实现 CI/CD 自动化
-- **🔒 安全可靠** - HTTPS 强制传输，无前段漏洞风险
+| 技术 | 版本 | 用途 |
+| --- | --- | --- |
+| Vue 3 | 3.5 | 视图层（`<script setup>` + TypeScript） |
+| Vite | 8.3 | 开发服务器与构建 |
+| Tailwind CSS | 4 | 样式（`@theme` 中集中定义配色与字体变量） |
+| vue-router | 5 | 路由（`/` 首页、`/about`、404） |
+| @fontsource-variable | 5.3 | Inter / JetBrains Mono 可变字体，自托管，不依赖外部 CDN |
 
-## 🎯 技术栈详解
+## 目录结构
 
-遵循现代前端黄金标准，采用下载量最多的前端工具链：
-
-| 技术 | 版本 | 用途 | 行业地位 |
-|------|------|------|----------|
-| **Vue 3** | 3.5.13 | 前端框架 | 🏆 第二受欢迎，中文企业首选 |
-| **TypeScript** | 6.0.0 | 类型安全 | 🥇 行业标准，4M+ 周下载 |
-| **Vite** | 8.2.2 | 构建工具 | 下一代构建器，秒级启动 |
-| **Tailwind CSS** | 3.4.17 | CSS 框架 | 🚀 增长最快，400k+ 周下载 |
-| **Pinia** | 2.3.0 | 状态管理 | Vue 3 官方推荐 |
-| **Vue Router** | 5.3.1 | 路由 | SPA 导航标准 |
-
-### 前端技能 Top 10 参考
-
-本项目完全覆盖以下 Top 10 前端技能的最佳实践：
-
-1. ✅ **Vue.js** - 核心框架
-2. ✅ **React** - 设计理念（组件化）
-3. ✅ **TypeScript** - 类型系统
-4. ✅ **CSS/SCSS** - 样式架构
-5. ✅ **Tailwind CSS** - 实用优先 CSS
-6. ✅ **Vite/Webpack** - 构建工具
-7. ✅ **Node.js** - 后端运行时
-8. ✅ **Git** - 版本控制
-9. ✅ **Web 工程化** - 组件化设计
-10. ✅ **设计模式** - 最佳实践
-
-## 📋 主要功能
-
-### 个性化展示
-
-- **Hero Section** - 吸引眼球的个人简介，使用渐变色和动态效果
-- **技能可视化** - 60-30-10 配色法则，分类展示技术栈
-- **项目展示画廊** - 卡片式设计，悬停效果，技术标签
-- **联系信息卡片** - 多通道联系，渐变背景
-
-### 前端最佳实践
-
-- **组件化架构** - 遵循原子设计原则
-- **响应式设计** - 移动端优先，渐进增强
-- **性能优化** - 按需加载，代码分割，动画性能
-- **可访问性** - ARIA 标签，键盘导航支持
-- **SEO 优化** - 语义化 HTML，Meta 标签
-
-## 🚀 快速开始
-
-### 开发环境要求
-
-```bash
-# 要求 Node.js 22+ 或 24+
-node --version
+```
+src/
+  data/profile.ts         ← 唯一内容源：个人信息 / 项目 / 实习 / 技能 / 教育 / 荣誉
+  views/HomeView.vue      ← 首页：hero、量化指标、项目、做法、技术栈、联系
+  views/AboutView.vue     ← 关于：经历、教育、荣誉、技术栈
+  views/NotFoundView.vue  ← 404
+  components/             ← SkillGroupPanel 等展示组件
+  assets/main.css         ← Tailwind 入口 + @theme 设计变量
+public/
+  wangjiashen-resume-ai.pdf    ← 「AI 应用开发工程师」版简历（页面上的下载按钮指向它）
+  wangjiashen-resume-java.pdf  ← 「Java / Agent 后端」版简历
+  favicon.svg
 ```
 
-### 安装依赖
+## 改内容
+
+编辑 `src/data/profile.ts`，主要字段：
+
+| 字段 | 说明 |
+| --- | --- |
+| `name` / `pinyin` / `initials` | 姓名、拼音（hero 铭牌）、首字母（导航方块与头像位） |
+| `headline` | 首页大标题，拆成 `lead` / `accent`（描色）/ `tail` 三段 |
+| `subline` / `bio` | 副标题与简介段落 |
+| `email` / `phone` / `wechat` / `location` | 联系区，`phone` 会自动生成 `tel:` 链接 |
+| `github` | 留空则不渲染该行 |
+| `stats` | hero 下方铭牌里的数字（实习段数、项目数、排名） |
+| `metrics` | 四条量化成绩，`value` 是主数字，`label` 是它属于谁，`note` 是一句怎么得到的 |
+| `projects` | 每个项目：`period` `domain`（如 AGENT · RAG）`title` `subtitle` `description` `points[]` `metric` `tech[]`，有 `href` 才显示外链 |
+| `experience` | 实习：`period` `role` `company` `summary` `points[]` |
+| `skillGroups` | 技术栈四列，`level` 为 1–5，控制右侧进度条格数 |
+| `education` / `honors` | 教育经历与荣誉（荣誉是字符串数组） |
+| `resumes` | 下载按钮，`href` 已用 `import.meta.env.BASE_URL` 拼接，部署到子目录也不会 404 |
+
+写内容的两条约束（也是这份站点的取舍）：
+1. 项目条目写「遇到什么坑 → 用了什么办法 → 效果怎么衡量」，不写「使用了 XX 框架」。
+2. 数字必须能在简历里对得上；对不上宁可删掉。
+
+## 换简历
+
+把新的 PDF 覆盖到 `public/wangjiashen-resume-ai.pdf` 与 `public/wangjiashen-resume-java.pdf`（文件名保持一致即可，无需改代码）。
+若文件名不同，同步改 `profile.ts` 中 `resumes` 的 `href`。
+
+## 本地开发
 
 ```bash
 npm install
+npm run dev        # 开发服务器
+npm run build      # 产物到 dist/
+npm run preview    # 预览构建产物
+npm run type-check # vue-tsc 类型检查
 ```
 
-### 本地开发
+## 部署
 
-```bash
-# 启动开发服务器 (热重载)
-npm run dev
+`base` 由环境变量 `VITE_BASE` 决定，**必须与站点的实际访问路径一致**，否则 JS/CSS 会 404：
 
-# 预览生产构建
-npm run preview
+| 部署位置 | 访问地址示例 | `VITE_BASE` |
+| --- | --- | --- |
+| 仓库子路径（GitHub Pages 项目页、Gitee Pages） | `https://user.github.io/personal-website/` | `/personal-website/` |
+| 用户根域 / 独立域名 | `https://user.github.io/` | `/` |
 
-# TypeScript 类型检查
-npm run type-check
-```
+当前 `.env.production` 中写的是 `VITE_BASE=/personal-website/`，即按仓库子路径部署。
+改完环境变量要重新 `npm run build`，构建产物里的资源前缀才会更新。
 
-## 🌐 部署指南
+路由使用 history 模式，直接访问 `/about` 这类深链需要在托管端配置 SPA 回退（GitHub Pages 用 404.html、Nginx 用 `try_files $uri $uri/ /index.html`）。
 
-### Gitee Pages 自动部署
+## 设计与内容原则
 
-本项目的部署流程完整遵循 Top 10 前端技能的最佳实践，实现了零配置自动化部署。
+- 排版走「编辑部」风格：纸色背景、细网格、等宽小标签、克制的描线，不用渐变和卡片阴影。
+- 首页顺序即说服顺序：一句话定位 → 四个数字 → 项目 → 做法 → 技术栈 → 联系。
+- 「我的做法」四条（先定验收标准 / 结果可追溯 / 失败可降级 / 成本可核算）是几个项目的共同方法，用来回答「你后端怎么取舍」。
 
-#### 1. 创建 Gitee 仓库
+## License
 
-```bash
-# 在 Gitee 上创建名为 personal-website 的公开仓库
-# 不勾选 .gitignore 和 README 初始化
-```
-
-#### 2. 配置远程仓库
-
-```bash
-cd portfolio-website
-
-# 添加 Gitee 远程
-git remote add origin https://gitee.com/your-username/personal-website.git
-
-# 推送到 Gitee
-git push -u origin master
-```
-
-#### 3. 启用 Gitee Pages
-
-1. 访问 Gitee 仓库 → 点击 **"Pages"** 菜单
-2. 选择分支：`master`
-3. 选择目录：`root`
-4. 点击 **"启用 Pages"**
-
-#### 4. 等待部署
-
-- Gitee 自动构建（约 1-2 分钟）
-- 访问您的 Pages URL：`https://gituninterrupted.sina.com.cn/personal-website/`
-
-### GitHub Actions 自动化
-
-`.github/workflows/deploy.yml` 实现了完整的 CI/CD 流程：
-
-```yaml
-# 自动构建、测试、修复 SPA 路由、部署
-# 支持 Node 22+ 和依赖缓存
-# 自动修复 GitHub Pages 刷新 404 问题
-```
-
-## 🎨 设计系统
-
-### 配色方案（60-30-10 法则）
-
-```css
-/* 主色 60% - 背景渐变 */
-from-indigo-50 via-purple-50 to-pink-50
-
-/* 辅助色 30% - 卡片背景 */
-white/80 backdrop-blur-sm
-
-/* 强调色 10% - 交互式元素 */
-blue-600 to-purple-600
-```
-
-### 设计令牌（Design Tokens）
-
-```javascript
-// tailwind.config.js - 扩展主题
-colors: {
-  primary: {
-    50: '#eff6ff', 100: '#dbeafe', ... 900: '#1e3a8a'
-  }
-}
-```
-
-## 📊 性能指标
-
-### 自动优化报告
-
-| 指标 | 目标 | 实际 | 状态 |
-|------|------|------|------|
-| 首屏加载时间 | < 2s | 1.2s | ✅ |
-| Lighthouse 性能 | > 90 | 预计 85+ | ⚡ |
-| Gzip 包体积 | < 50KB | 40KB | ✅ |
-| 移动端友好度 | 100% | 100% | ✅ |
-| 可访问性评分 | > 80 | 预计 90+ | ♿ |
-
-## 🔧 开发工作流
-
-### 完整的 CI/CD 流程
-
-```
-代码提交 → 类型检查 → 构建优化 → 修复 404 → 自动部署
-```
-
-### 代码质量
-
-- ✅ **TypeScript 严格模式** - 无隐式 any
-- ✅ **ESLint 标准** - 代码规范
-- ✅ **Vue 模板检查** - 组件语法正确
-- ✅ **自动依赖检测** - 依赖一致性验证
-
-## 🎯 前端技能表现
-
-### 顶级技能的实现
-
-1. **Vue 3 组合式 API** - 现代化组件设计
-2. **TypeScript 类型安全** - 完善的接口定义
-3. **Tailwind CSS 实用优先** - 保持设计一致性
-4. **响应式断点** - 移动优先策略
-5. **渐变色系统** - 60-30-10 配色法则
-6. **动效优化** - GPU 加速动画
-7. **懒加载** - 图片延迟加载
-8. **代码分割** - 按需加载资源
-
-## 📊 对比分析：常见 VS 优化方案
-
-### 基础版本 vs 优化版本
-
-| 特性 | 基础版本 | 优化版本 | 提升 |
-|------|----------|----------|------|
-| 配色方案 | 单色，单调 | 渐变色系统 | **300%** 视觉吸引力 |
-| 组件架构 | 简单 HTML | 组件化设计 | **组件复用率 80%** |
-| 响应式 | 简单适配 | 移动端优先 | **渐进增强** 支持 |
-| 性能 | 标准 | Vite + 代码分割 | **加载速度 +50%** |
-| 用户体验 | 基础 | 动效 + 悬停 | **停留时间 +40%** |
-
-## 🚨 常见问题解决
-
-### 部署问题
-
-- **页面白屏** → 检查 `.env.production` 的 `VITE_BASE` 配置
-- **刷新 404** → 确认 `cp dist/index.html dist/404.html` 已执行
-- **资源 404** → 检查 `base` 路径配置
-
-### 开发问题
-
-- **Tailwind 未生效** → 确认 `src/assets/main.css` 包含 `@tailwind` 指令
-- **TypeScript 错误** → 运行 `npm run type-check` 查看详细错误
-- **构建超时** → 检查网络，使用 `npm ci` 安装依赖
-
-## 📞 技术支持
-
-### 官方文档
-
-- **[Vue 3 文档](https://vuejs.org/)** - 官方教程
-- **[Tailwind CSS 文档](https://tailwindcss.com/)** - 实用工具类
-- **[Vite 文档](https://vitejs.dev/)** - 构建工具指南
-
-### 最佳实践
-
-- **[前端技能 Top 10](https://skills.sh/)** - 行业技能排名
-- **[设计令牌实践](https://www.smashingmagazine.com/2020/06/unit-system-tokens-component-styles/)** - 设计系统
-- **[性能优化](https://web.dev/performance/)** - 性能最佳实践
-
----
-
-**🎉 本项目的优化完全基于前端 Top 10 技能的行业最佳实践！**
-
-**GitHub 仓库**: [github.com/yourusername/portfolio-website](https://github.com/yourusername/portfolio-website)  
-**Gitee 仓库**: [gitee.com/yourusername/personal-website](https://gitee.com/yourusername/personal-website)
-
-**技术栈**: Vue 3 + TypeScript + Vite + Tailwind CSS  
-**托管平台**: Gitee Pages / GitHub Pages  
-**完成度**: 100% ✅
-
----
-
-*这个项目展示了我在前端工程化、现代 UI/UX、性能优化和自动化部署方面的专业能力！🚀*
+内容与简历归作者本人所有；模板部分 MIT。

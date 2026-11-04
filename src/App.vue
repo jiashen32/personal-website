@@ -13,7 +13,7 @@ const onAbout = computed(() => route.path === '/about')
 
     <header class="sticky top-0 z-50 border-b border-line/80 bg-paper/85 backdrop-blur-md">
       <div class="mx-auto flex h-16 max-w-[1180px] items-center justify-between gap-6 px-6 md:px-10">
-        <RouterLink to="/" class="group flex items-center gap-3" aria-label="晓宁个人主页">
+        <RouterLink to="/" class="group flex items-center gap-3" :aria-label="`${profile.name}的个人主页`">
           <span
             class="grid h-9 w-9 place-items-center border border-ink/25 font-mono text-[11px] tracking-[0.14em] text-accent transition-colors group-hover:border-accent group-hover:bg-accent group-hover:text-paper"
           >
@@ -24,14 +24,15 @@ const onAbout = computed(() => route.path === '/about')
             <span
               class="mt-0.5 hidden font-mono text-[9px] uppercase tracking-[0.16em] text-ink-mute sm:block"
             >
-              {{ profile.handle }} · Frontend
+              {{ profile.handle }} · Backend &amp; AI
             </span>
           </span>
         </RouterLink>
 
         <nav class="hidden items-center gap-8 md:flex" aria-label="主导航">
-          <RouterLink to="/#work" class="nav-link">作品</RouterLink>
-          <RouterLink to="/#skills" class="nav-link">能力</RouterLink>
+          <RouterLink to="/#work" class="nav-link">项目</RouterLink>
+          <RouterLink to="/#approach" class="nav-link">做法</RouterLink>
+          <RouterLink to="/#skills" class="nav-link">技术栈</RouterLink>
           <RouterLink to="/about" class="nav-link" :class="{ 'nav-link-active': onAbout }">
             关于
           </RouterLink>
@@ -43,7 +44,8 @@ const onAbout = computed(() => route.path === '/about')
           </a>
         </nav>
 
-        <nav class="flex items-center gap-5 md:hidden" aria-label="移动端导航">
+        <nav class="flex items-center gap-4 md:hidden" aria-label="移动端导航">
+          <RouterLink to="/#work" class="text-sm text-ink-soft">项目</RouterLink>
           <RouterLink to="/about" class="text-sm text-ink-soft">关于</RouterLink>
           <a
             :href="`mailto:${profile.email}`"
@@ -62,7 +64,7 @@ const onAbout = computed(() => route.path === '/about')
         class="mx-auto flex max-w-[1180px] flex-col gap-2 px-6 py-8 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-mute md:flex-row md:items-center md:justify-between md:px-10"
       >
         <p>© {{ new Date().getFullYear() }} {{ profile.name }} / {{ profile.handle }}</p>
-        <p>Vue 3 · Vite · Tailwind CSS · Gitee Pages</p>
+        <p>Vue 3 · Vite · Tailwind CSS · Updated {{ profile.updated }}</p>
       </div>
     </footer>
   </div>

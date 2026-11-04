@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+/* 字体在 src/main.ts 里以 JS 方式引入 @fontsource-variable，构建时才能正确改写字体文件路径 */
 
 /* ─────────────────────────────────────────────────────────────
    配色：冷调纸白 + 石墨墨色 + 深汽油绿
@@ -18,10 +19,10 @@
   --color-signal: #8a5d18;
   --color-night: #0f1513;
 
-  --font-sans: Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC',
-    system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'SFMono-Regular', 'Cascadia Code', Consolas, 'Liberation Mono',
-    Menlo, monospace;
+  --font-sans: 'Inter Variable', 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Noto Sans SC', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', 'SFMono-Regular', 'Cascadia Code',
+    Consolas, 'Liberation Mono', Menlo, monospace;
 }
 
 @layer base {
