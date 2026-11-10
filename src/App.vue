@@ -1,19 +1,31 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import type { ChromeState } from '@/components/EngineeringWeatherHero.vue'
 import { profile } from '@/data/profile'
 
 const route = useRoute()
 const onAbout = computed(() => route.path === '/about')
 const activeSection = ref('')
 const scrollProgress = ref(0)
+const chromeState = ref<ChromeState>({ active: false, style: {} })
 let observer: IntersectionObserver | undefined
+let progressFrame = 0
 
 const sectionIds = ['work', 'approach', 'skills', 'about', 'contact']
 
 const updateProgress = () => {
+  progressFrame = 0
   const scrollable = document.documentElement.scrollHeight - window.innerHeight
   scrollProgress.value = scrollable > 0 ? Math.min(1, window.scrollY / scrollable) : 0
+}
+
+const scheduleProgress = () => {
+  if (!progressFrame) progressFrame = requestAnimationFrame(updateProgress)
+}
+
+const updateChromeState = (state: ChromeState) => {
+  chromeState.value = state
 }
 
 const observeSections = () => {
@@ -41,20 +53,24 @@ const observeSections = () => {
 
 watch(
   () => route.fullPath,
-  () => requestAnimationFrame(observeSections),
+  () => {
+    chromeState.value = { active: false, style: {} }
+    requestAnimationFrame(observeSections)
+  },
 )
 
 onMounted(() => {
-  window.addEventListener('scroll', updateProgress, { passive: true })
-  window.addEventListener('resize', updateProgress)
+  window.addEventListener('scroll', scheduleProgress, { passive: true })
+  window.addEventListener('resize', scheduleProgress)
   updateProgress()
   requestAnimationFrame(observeSections)
 })
 
 onBeforeUnmount(() => {
   observer?.disconnect()
-  window.removeEventListener('scroll', updateProgress)
-  window.removeEventListener('resize', updateProgress)
+  window.removeEventListener('scroll', scheduleProgress)
+  window.removeEventListener('resize', scheduleProgress)
+  if (progressFrame) cancelAnimationFrame(progressFrame)
 })
 </script>
 
@@ -62,7 +78,11 @@ onBeforeUnmount(() => {
   <div class="min-h-screen bg-paper text-ink">
     <a class="skip-link" href="#main">跳到主要内容</a>
 
-    <header class="sticky top-0 z-50 border-b border-line/75 bg-paper/88 backdrop-blur-md">
+    <header
+      class="site-header sticky top-0 z-50 border-b backdrop-blur-md"
+      :class="{ 'is-atmospheric': chromeState.active }"
+      :style="chromeState.style"
+    >
       <div
         class="reading-progress"
         :style="{ transform: `scaleX(${scrollProgress})` }"
@@ -122,7 +142,9 @@ onBeforeUnmount(() => {
       </div>
     </header>
 
-    <RouterView />
+    <RouterView v-slot="{ Component }">
+      <component :is="Component" @chrome-state="updateChromeState" />
+    </RouterView>
 
     <footer class="border-t border-line">
       <div
@@ -136,6 +158,35 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.site-header {
+  border-color: color-mix(in srgb, var(--color-line) 75%, transparent);
+  background-color: color-mix(in srgb, var(--color-paper) 88%, transparent);
+  color: var(--color-ink);
+  transition: background-color 180ms linear, border-color 180ms linear, color 180ms linear;
+}
+
+.site-header.is-atmospheric {
+  border-color: var(--chrome-line);
+  background-color: color-mix(in oklch, var(--chrome-bg) 86%, transparent);
+  color: var(--chrome-ink);
+}
+
+.site-header.is-atmospheric .reading-progress {
+  background-color: var(--chrome-accent);
+}
+
+.site-header.is-atmospheric :deep(.text-ink),
+.site-header.is-atmospheric :deep(.text-ink-soft),
+.site-header.is-atmospheric :deep(.text-ink-mute),
+.site-header.is-atmospheric :deep(.text-accent) {
+  color: var(--chrome-ink);
+}
+
+.site-header.is-atmospheric :deep(.border-ink\/20),
+.site-header.is-atmospheric :deep(.border-ink\/25) {
+  border-color: var(--chrome-line);
+}
+
 .reading-progress {
   position: absolute;
   right: 0;

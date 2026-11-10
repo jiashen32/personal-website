@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import type { Project } from '@/data/profile'
 
 const props = defineProps<{ project: Project }>()
@@ -8,7 +8,27 @@ const closeButton = ref<HTMLButtonElement | null>(null)
 
 const dialogTitle = computed(() => `${props.project.title}案例详情`)
 
+const trapFocus = (event: KeyboardEvent) => {
+  if (event.key !== 'Tab') return
+  const dialog = (event.currentTarget as HTMLElement)
+  const focusable = [...dialog.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])')].filter(
+    (element) => !element.hasAttribute('disabled'),
+  )
+  const first = focusable[0]
+  const last = focusable.at(-1)
+  if (!first || !last) return
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
 onMounted(() => nextTick(() => closeButton.value?.focus()))
+onBeforeUnmount(() => closeButton.value?.blur())
 </script>
 
 <template>
@@ -19,6 +39,7 @@ onMounted(() => nextTick(() => closeButton.value?.focus()))
       aria-modal="true"
       :aria-labelledby="`project-dialog-${project.id}`"
       @keydown.esc="emit('close')"
+      @keydown="trapFocus"
     >
       <header class="project-dialog-header">
         <div>
@@ -97,7 +118,7 @@ onMounted(() => nextTick(() => closeButton.value?.focus()))
 
 .project-dialog {
   width: min(760px, 100%);
-  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
   overflow-y: auto;
   border: 1px solid var(--color-line);
   background-color: var(--color-paper);
