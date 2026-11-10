@@ -11,25 +11,26 @@ defineProps<{ group: SkillGroup }>()
       <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-mute">{{ group.en }}</span>
     </div>
 
-    <ul class="mt-5 space-y-4">
-      <li
-        v-for="item in group.items"
-        :key="item.name"
-        class="flex items-center justify-between gap-4"
-      >
-        <span class="text-sm text-ink-soft">{{ item.name }}</span>
-        <span
-          class="flex shrink-0 gap-1"
-          role="img"
-          :aria-label="`熟练度 ${item.level} / 5`"
-        >
+    <ul class="mt-5 space-y-5">
+      <li v-for="item in group.items" :key="item.name">
+        <div class="flex items-center justify-between gap-4">
+          <span class="text-sm text-ink-soft">{{ item.name }}</span>
           <span
-            v-for="step in 5"
-            :key="step"
-            class="h-1 w-3.5"
-            :class="step <= item.level ? 'bg-accent' : 'bg-line'"
-          ></span>
-        </span>
+            class="flex shrink-0 gap-1"
+            role="img"
+            :aria-label="`熟练度 ${item.level} / 5`"
+          >
+            <span
+              v-for="step in 5"
+              :key="step"
+              class="h-1 w-3.5"
+              :class="step <= item.level ? 'bg-accent' : 'bg-line'"
+            ></span>
+          </span>
+        </div>
+        <p v-if="item.usedIn?.length" class="mt-1.5 text-[10px] leading-5 text-ink-mute">
+          用于：{{ item.usedIn.join(' · ') }}
+        </p>
       </li>
     </ul>
   </div>

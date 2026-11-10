@@ -16,7 +16,7 @@
   --color-accent-strong: #0b2b28;
   --color-accent-soft: #e4ece8;
   --color-accent-light: #a9c9c0;
-  --color-signal: #8a5d18;
+  --color-signal: #0e5c55;
   --color-night: #0f1513;
 
   --font-sans: 'Inter Variable', 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
@@ -154,16 +154,6 @@
     background-color: currentColor;
   }
 
-  .status-dot.pulse::after {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border: 1px solid currentColor;
-    border-radius: inherit;
-    opacity: 0.4;
-    animation: dot-pulse 2.6s ease-out infinite;
-  }
-
   /* 签名元素：带角标刻度的资料铭牌 */
   .plate {
     position: relative;
@@ -228,18 +218,6 @@
 
   .skip-link:focus {
     top: 1rem;
-  }
-}
-
-@keyframes dot-pulse {
-  0% {
-    transform: scale(0.7);
-    opacity: 0.5;
-  }
-  70%,
-  100% {
-    transform: scale(1.7);
-    opacity: 0;
   }
 }
 

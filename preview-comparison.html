@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ExploreBanner - 悬停配色对比预览</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f2f3ee;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter Variable', 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      padding: 4rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .preview-card {
+      border: 1px solid #d5dad3;
+      background: #fbfbf7;
+      padding: 2rem;
+      border-radius: 4px;
+    }
+
+    .preview-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #3f4b48;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #d5dad3;
+      padding-bottom: 0.5rem;
+    }
+
+    .explore-banner {
+      position: relative;
+      padding: 2rem;
+      text-align: center;
+      min-height: 200px;
+      border: 1px dashed #d5dad3;
+      background: white;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .explore-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--color-ink, #151a19);
+      position: relative;
+      z-index: 1;
+    }
+
+    .scheme-title {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #5f6b67;
+    }
+
+    .color-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      color: #5f6b67;
+    }
+
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      border: 1px solid #e4ece8;
+    }
+
+    /* 方案 B：珊瑚红 */
+    .scheme-b {
+      --color-signal: #d65d5f;
+    }
+
+    /* 方案 A：深青绿 */
+    .scheme-a {
+      --color-signal: #0e5c55;
+    }
+
+    /* 方案 C：香槟金 */
+    .scheme-c {
+      --color-signal: #c4a264;
+    }
+
+    /* 方案 D：雾霾绿 */
+    .scheme-d {
+      --color-signal: #4a6a65;
+    }
+
+    /* 高亮层 */
+    .explore-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      mask-image: radial-gradient(circle 64px at var(--mx, 50%) var(--my, 50%), #000 0%, #000 88%, transparent 100%);
+      -webkit-mask-image: radial-gradient(circle 64px at var(--mx, 50%) var(--my, 50%), #000 0%, #000 88%, transparent 100%);
+      transition: opacity 0.3s ease;
+    }
+
+    /* 关键：触发重叠效果 */
+    .explore-banner.active .explore-overlay {
+      opacity: 1;
+    }
+
+    .explore-overlay .explore-title {
+      color: var(--color-signal);
+      position: relative;
+      z-index: 1;
+    }
+
+    .info-tooltip {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: #8a5d18;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .debug-info {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: #5f6b67;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-grid">
+    <!-- 方案 A -->
+    <div class="preview-card">
+      <div class="preview-title">方案 A - 深青绿</div>
+      <div class="explore-banner scheme-a" id="banner-a">
+        <div class="explore-overlay"></div>
+        <p class="explore-title">探索未至之境</p>
+      </div>
+      <div class="scheme-title">#0e5c55</div>
+      <div class="color-preview">
+        <div class="color-swatch" style="background-color: #0e5c55;"></div>
+        <span>同色系深化 | 协调统一</span>
+      </div>
+      <div class="info-tooltip">鼠标悬停查看效果</div>
+      <div class="debug-info">Hover: <span class="hover-status">inactive</span></div>
+    </div>
+
+    <!-- 方案 B - 演示方案 -->
+    <div class="preview-card">
+      <div class="preview-title">方案 B - 珊瑚红</div>
+      <div class="explore-banner scheme-b" id="banner-b">
+        <div class="explore-overlay"></div>
+        <p class="explore-title">探索未至之境</p>
+      </div>
+      <div class="scheme-title">#d65d5f</div>
+      <div class="color-preview">
+        <div class="color-swatch" style="background-color: #d65d5f;"></div>
+        <span>对比点缀 | 视觉焦点</span>
+      </div>
+      <div class="info-tooltip">鼠标悬停查看效果</div>
+      <div class="debug-info">Hover: <span class="hover-status">inactive</span></div>
+    </div>
+
+    <!-- 方案 C -->
+    <div class="preview-card">
+      <div class="preview-title">方案 C - 香槟金</div>
+      <div class="explore-banner scheme-c" id="banner-c">
+        <div class="explore-overlay"></div>
+        <p class="explore-title">探索未至之境</p>
+      </div>
+      <div class="scheme-title">#c4a264</div>
+      <div class="color-preview">
+        <div class="color-swatch" style="background-color: #c4a264;"></div>
+        <span>明亮提亮 | 保留金调</span>
+      </div>
+      <div class="info-tooltip">鼠标悬停查看效果</div>
+      <div class="debug-info">Hover: <span class="hover-status">inactive</span></div>
+    </div>
+
+    <!-- 方案 D -->
+    <div class="preview-card">
+      <div class="preview-title">方案 D - 雾霾绿</div>
+      <div class="explore-banner scheme-d" id="banner-d">
+        <div class="explore-overlay"></div>
+        <p class="explore-title">探索未至之境</p>
+      </div>
+      <div class="scheme-title">#4a6a65</div>
+      <div class="color-preview">
+        <div class="color-swatch" style="background-color: #4a6a65;"></div>
+        <span>科技淡墨 | 现代极简</span>
+      </div>
+      <div class="info-tooltip">鼠标悬停查看效果</div>
+      <div class="debug-info">Hover: <span class="hover-status">inactive</span></div>
+    </div>
+  </div>
+
+  <script>
+    // 为每个 Banner 添加跟随效果 - 修正版本
+    ['a', 'b', 'c', 'd'].forEach(id => {
+      const banner = document.getElementById(`banner-${id}`);
+      const overlay = banner.querySelector('.explore-overlay');
+      const statusLabel = banner.nextElementSibling.nextElementSibling.nextElementSibling.nextElementSibling;
+
+      banner.addEventListener('mouseenter', () => {
+        banner.classList.add('active');
+        statusLabel.textContent = 'active';
+        statusLabel.style.color = '#0e5c55';
+      });
+
+      banner.addEventListener('mouseleave', () => {
+        banner.classList.remove('active');
+        statusLabel.textContent = 'inactive';
+        statusLabel.style.color = '#5f6b67';
+      });
+
+      banner.addEventListener('mousemove', (e) => {
+        const rect = banner.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        banner.style.setProperty('--mx', `${x}px`);
+        banner.style.setProperty('--my', `${y}px`);
+      });
+    });
+  </script>
+</body>
+</html>
