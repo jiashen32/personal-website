@@ -22,6 +22,10 @@ export default defineConfig(({ mode }) => {
     },
     // 基础路径：部署在二级目录（如 GitHub / Gitee Pages 的项目页）时必须与仓库名一致
     base: env.VITE_BASE || '/',
+    // 仅扫描应用入口；public 下的独立页面使用浏览器 import map，不应由 Vite 解析依赖
+    optimizeDeps: {
+      entries: ['index.html'],
+    },
     // 构建优化
     build: {
       outDir: 'dist',

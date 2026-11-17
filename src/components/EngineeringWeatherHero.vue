@@ -25,17 +25,20 @@ const { minute, mode, timeLabel, phaseLabel, themeStyle, setManualMinute, resume
 let observer: IntersectionObserver | undefined
 
 const projectCountLabel = computed(() => `${props.projectCount} 个精选案例`)
-const chromeUsesDarkInk = computed(() => {
-  const value = minute.value === 1440 ? 0 : minute.value
-  return value >= 300 && value < 1170
-})
+const heroStyle = computed<Record<string, string>>(() => ({
+  ...themeStyle.value,
+  '--atmo-panel': 'rgb(6 20 27 / 68%)',
+  '--atmo-ink': '#effffb',
+  '--atmo-muted': '#b5ccc9',
+  '--atmo-accent': '#71f7df',
+  '--atmo-line': 'rgb(207 255 246 / 20%)',
+  '--atmo-focus': '#9effed',
+}))
 const chromeStyle = computed<Record<string, string>>(() => ({
-  '--chrome-bg': themeStyle.value['--atmo-sky-top'] ?? '#afc8c4',
-  '--chrome-ink': chromeUsesDarkInk.value ? '#102522' : '#f2f3ee',
-  '--chrome-line': chromeUsesDarkInk.value ? 'rgb(16 37 34 / 32%)' : 'rgb(242 243 238 / 32%)',
-  '--chrome-accent': chromeUsesDarkInk.value
-    ? (themeStyle.value['--atmo-accent'] ?? '#16544f')
-    : (themeStyle.value['--atmo-cloud-near'] ?? '#edf0e7'),
+  '--chrome-bg': '#07151c',
+  '--chrome-ink': '#effffb',
+  '--chrome-line': 'rgb(207 255 246 / 18%)',
+  '--chrome-accent': '#71f7df',
 }))
 
 watch(
@@ -70,20 +73,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section ref="hero" class="weather-hero" :style="themeStyle">
+  <section ref="hero" class="weather-hero" :style="heroStyle">
     <div class="atmosphere" aria-hidden="true">
+      <div class="anime-wallpaper"></div>
+      <div class="wallpaper-shade"></div>
       <div class="atmosphere-grid"></div>
-      <svg class="isobars" viewBox="0 0 1440 760" preserveAspectRatio="none">
-        <path d="M-80 520C190 270 310 220 610 392S1070 620 1510 208" />
-        <path d="M-70 625C230 350 420 335 690 470s430 128 810-176" />
-        <path d="M180-40c210 168 290 290 390 520s286 288 720 126" />
-      </svg>
-      <div class="orb"></div>
-      <div class="cloud cloud-far cloud-far-a"></div>
-      <div class="cloud cloud-far cloud-far-b"></div>
-      <div class="cloud cloud-near cloud-near-a"></div>
-      <div class="cloud cloud-near cloud-near-b"></div>
-      <div class="horizon"></div>
+      <div class="scanlines"></div>
+      <div class="light-leak"></div>
     </div>
 
     <span class="hero-coordinate hidden lg:block" aria-hidden="true">LOCAL ATMOSPHERE / 24H</span>
@@ -188,103 +184,95 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .weather-hero {
-  --atmo-sky-top: #afc8c4;
-  --atmo-sky-bottom: #e2cfad;
-  --atmo-horizon: #c99c72;
-  --atmo-cloud-far: rgb(237 240 231 / 58%);
-  --atmo-cloud-near: rgb(244 246 239 / 84%);
-  --atmo-grid: rgb(18 63 59 / 18%);
-  --atmo-panel: rgb(242 243 238 / 91%);
-  --atmo-ink: #152523;
-  --atmo-muted: #4d615d;
-  --atmo-accent: #16544f;
-  --atmo-line: rgb(100 130 124 / 75%);
+  --atmo-panel: rgb(6 20 27 / 64%);
+  --atmo-ink: #effffb;
+  --atmo-muted: #b5ccc9;
+  --atmo-accent: #71f7df;
+  --atmo-line: rgb(207 255 246 / 20%);
+  --atmo-focus: #9effed;
   position: relative;
   min-height: calc(100svh - 4rem);
   overflow: hidden;
   border-bottom: 1px solid var(--atmo-line);
-  background: linear-gradient(180deg, var(--atmo-sky-top), var(--atmo-sky-bottom) 74%, var(--atmo-horizon));
+  background: #061118;
   color: var(--atmo-ink);
-  transition: background 180ms linear, color 180ms linear;
   isolation: isolate;
 }
 
 .atmosphere,
+.anime-wallpaper,
+.wallpaper-shade,
 .atmosphere-grid,
-.horizon {
+.scanlines {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
+.anime-wallpaper {
+  inset: -1.5rem;
+  background-image: url('/anime-wallpaper.png');
+  background-position: center 36%;
+  background-size: cover;
+  filter: saturate(0.78) contrast(1.04);
+  transform: scale(1.025);
+  animation: wallpaper-breathe 18s ease-in-out infinite alternate;
+}
+
+.wallpaper-shade {
+  background:
+    linear-gradient(90deg, rgb(3 12 17 / 96%) 0%, rgb(4 15 21 / 88%) 30%, rgb(5 17 24 / 54%) 58%, rgb(3 11 17 / 58%) 100%),
+    linear-gradient(180deg, rgb(2 8 13 / 42%) 0%, rgb(3 12 18 / 16%) 45%, rgb(3 12 18 / 82%) 100%),
+    color-mix(in oklch, var(--atmo-sky-top) 18%, transparent);
+}
+
 .atmosphere-grid {
-  background-image: linear-gradient(to right, var(--atmo-grid) 1px, transparent 1px), linear-gradient(to bottom, var(--atmo-grid) 1px, transparent 1px);
+  opacity: 0.28;
+  background-image:
+    linear-gradient(to right, rgb(173 255 239 / 12%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(173 255 239 / 10%) 1px, transparent 1px);
   background-size: 76px 76px;
-  mask-image: linear-gradient(to bottom, black, transparent 82%);
+  mask-image: linear-gradient(90deg, black, transparent 72%);
 }
 
-.isobars {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: none;
-  stroke: var(--atmo-grid);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
+.scanlines {
+  opacity: 0.11;
+  background-image: repeating-linear-gradient(to bottom, transparent 0 3px, rgb(185 255 244 / 30%) 4px);
+  mix-blend-mode: screen;
 }
 
-.orb {
+.light-leak {
   position: absolute;
-  top: 13%;
-  right: 12%;
-  width: clamp(44px, 7vw, 92px);
+  top: -18%;
+  right: 7%;
+  width: 40vw;
   aspect-ratio: 1;
-  border: 1px solid var(--atmo-line);
   border-radius: 50%;
-  background: color-mix(in oklch, var(--atmo-cloud-near) 78%, transparent);
-  box-shadow: 0 0 48px color-mix(in oklch, var(--atmo-cloud-near) 48%, transparent);
+  background: color-mix(in oklch, var(--atmo-accent) 18%, transparent);
+  filter: blur(90px);
+  opacity: 0.5;
 }
 
-.cloud {
-  position: absolute;
-  border-radius: 50%;
-  transform: translate3d(0, 0, 0);
-}
-
-.cloud::before,
-.cloud::after {
-  content: '';
-  position: absolute;
-  border-radius: inherit;
-  background: inherit;
-}
-
-.cloud-far { width: 260px; height: 58px; background: var(--atmo-cloud-far); }
-.cloud-near { width: 390px; height: 92px; background: var(--atmo-cloud-near); }
-.cloud::before { width: 42%; height: 190%; left: 17%; bottom: 0; }
-.cloud::after { width: 52%; height: 235%; right: 6%; bottom: -4%; }
-.cloud-far-a { top: 19%; left: -4%; animation: cloud-drift 28s ease-in-out infinite alternate; }
-.cloud-far-b { top: 38%; right: -5%; transform: scale(0.72); animation: cloud-drift-reverse 34s ease-in-out infinite alternate; }
-.cloud-near-a { right: 9%; bottom: -3%; transform: scale(1.25); }
-.cloud-near-b { left: -10%; bottom: 3%; transform: scale(0.88); }
-.horizon { top: auto; height: 18%; background: linear-gradient(to top, var(--atmo-horizon), transparent); opacity: 0.48; }
-
-.weather-shell { position: relative; z-index: 2; }
+.weather-shell { position: relative; z-index: 2; width: 100%; max-width: min(1180px, 100vw); overflow: hidden; box-sizing: border-box; }
 .hero-topline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; }
 .weather-label { font-family: var(--font-mono); font-size: 0.625rem; line-height: 1.4; letter-spacing: 0.18em; text-transform: uppercase; color: var(--atmo-muted); }
-.system-readout { display: inline-flex; align-items: center; gap: 0.65rem; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; color: var(--atmo-muted); }
+.system-readout { display: inline-flex; align-items: center; gap: 0.65rem; border: 1px solid var(--atmo-line); border-radius: 999px; background: rgb(3 14 20 / 42%); padding: 0.55rem 0.8rem; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; color: var(--atmo-muted); backdrop-filter: blur(10px); }
 .system-pulse { color: var(--atmo-accent); animation: system-breathe 3s ease-in-out infinite; }
-.hero-layout { display: grid; gap: 2rem; margin-top: clamp(2rem, 5vh, 4.5rem); }
-.reading-plane { max-width: 690px; border: 1px solid var(--atmo-line); border-radius: 1.75rem 1.75rem 4.5rem 1.75rem; background: var(--atmo-panel); padding: clamp(1.5rem, 4vw, 3.2rem); box-shadow: 0 24px 80px rgb(18 40 38 / 10%); backdrop-filter: blur(12px); }
-.reading-plane h1 { margin-top: 1.25rem; font-size: clamp(2.3rem, 5.6vw, 4.75rem); font-weight: 650; line-height: 1.08; letter-spacing: -0.048em; }
-.reading-plane h1 em { color: var(--atmo-accent); font-style: normal; }
-.hero-subline { margin-top: 1.8rem; max-width: 36rem; font-size: clamp(1rem, 1.6vw, 1.125rem); line-height: 2; }
+.hero-layout { display: grid; min-width: 0; gap: 2rem; margin-top: clamp(2rem, 5vh, 4.5rem); }
+.hero-copy,
+.reading-plane,
+.weather-console { min-width: 0; }
+.reading-plane { max-width: 780px; padding: clamp(1rem, 3vw, 2.5rem) 0; text-shadow: 0 2px 22px rgb(0 0 0 / 48%); }
+.reading-plane h1 { margin-top: 1.25rem; font-size: clamp(2.8rem, 7vw, 6.5rem); font-weight: 680; line-height: 0.98; letter-spacing: -0.058em; }
+.reading-plane h1 em { color: var(--atmo-accent); font-style: normal; text-shadow: 0 0 34px color-mix(in oklch, var(--atmo-accent) 32%, transparent); }
+.hero-subline { margin-top: 2rem; max-width: 38rem; font-size: clamp(1rem, 1.6vw, 1.125rem); line-height: 2; color: #f4fffd; }
 .hero-bio { margin-top: 0.75rem; max-width: 38rem; font-size: 0.875rem; line-height: 2; color: var(--atmo-muted); }
-.weather-button { display: inline-flex; align-items: center; gap: 0.6rem; border: 1px solid var(--atmo-accent); border-radius: 999px; padding: 0.8rem 1.2rem; font-size: 0.875rem; line-height: 1; }
-.weather-button-solid { background: var(--atmo-accent); color: var(--atmo-panel); }
-.weather-button-ghost { color: var(--atmo-ink); }
-.hero-facts { display: grid; gap: 1rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--atmo-line); }
+.weather-button { display: inline-flex; align-items: center; gap: 0.6rem; border: 1px solid var(--atmo-line); border-radius: 999px; padding: 0.8rem 1.2rem; font-size: 0.875rem; line-height: 1; backdrop-filter: blur(12px); transition: border-color 180ms ease, background-color 180ms ease, transform 180ms ease; }
+.weather-button:hover { transform: translateY(-2px); }
+.weather-button-solid { border-color: var(--atmo-accent); background: var(--atmo-accent); color: #06201d; text-shadow: none; }
+.weather-button-ghost { background: rgb(3 14 20 / 42%); color: var(--atmo-ink); }
+.weather-button-ghost:hover { border-color: var(--atmo-accent); }
+.hero-facts { display: grid; gap: 1rem; max-width: 42rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--atmo-line); }
 .hero-facts dt { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--atmo-muted); }
 .hero-facts dd { margin-top: 0.4rem; font-size: 0.8rem; color: var(--atmo-ink); }
 
@@ -316,11 +304,28 @@ onBeforeUnmount(() => {
 .hero-coordinate { position: absolute; z-index: 2; top: 50%; left: 12px; transform: translateY(-50%); writing-mode: vertical-rl; font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.18em; color: var(--atmo-muted); opacity: 0.48; }
 
 @media (min-width: 440px) { .hero-facts { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 1024px) { .hero-layout { grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.72fr); align-items: center; gap: clamp(2rem, 5vw, 5rem); } }
-@media (max-width: 639px) { .weather-hero { min-height: auto; } .weather-shell { padding-top: 1.5rem; padding-bottom: 3rem; } .hero-topline { margin-bottom: 0.5rem; } .reading-plane, .weather-console { padding: 1.25rem; backdrop-filter: blur(8px); } .reading-plane { max-height: none; } .cloud-near-a { right: -45%; } .hero-bio { line-height: 1.85; } }
-@media (prefers-reduced-motion: reduce) { .weather-hero { transition: none; } .cloud, .system-pulse { animation: none; } }
+@media (min-width: 1024px) { .hero-layout { grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.56fr); align-items: center; gap: clamp(1.5rem, 4vw, 4rem); } }
+@media (max-width: 639px) {
+  .weather-hero { min-height: auto; }
+  .weather-shell { padding-top: 1.5rem; padding-bottom: 3rem; }
+  .hero-topline { margin-bottom: 0.5rem; }
+  .anime-wallpaper { inset: 0; background-position: 58% center; transform: none; }
+  .wallpaper-shade {
+    background:
+      linear-gradient(180deg, rgb(3 12 17 / 67%) 0%, rgb(4 15 21 / 76%) 42%, rgb(3 12 18 / 96%) 100%),
+      linear-gradient(90deg, rgb(3 12 17 / 72%), rgb(3 12 17 / 28%));
+  }
+  .reading-plane { max-height: none; padding: 1rem 0; }
+  .reading-plane h1 { max-width: 10ch; }
+  .hero-subline,
+  .hero-bio { max-width: 100%; overflow-wrap: anywhere; }
+  .weather-button { max-width: 100%; }
+  .weather-button-ghost { white-space: normal; }
+  .weather-console { width: 100%; padding: 1.25rem; backdrop-filter: blur(12px); }
+  .hero-bio { line-height: 1.85; }
+}
+@media (prefers-reduced-motion: reduce) { .anime-wallpaper, .system-pulse { animation: none; } }
 
-@keyframes cloud-drift { to { transform: translate3d(42px, 8px, 0); } }
-@keyframes cloud-drift-reverse { to { transform: translate3d(-36px, -6px, 0) scale(0.72); } }
+@keyframes wallpaper-breathe { to { transform: scale(1.055) translate3d(-0.4%, -0.25%, 0); } }
 @keyframes system-breathe { 50% { opacity: 0.35; } }
 </style>
