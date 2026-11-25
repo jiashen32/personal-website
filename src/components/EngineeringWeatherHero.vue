@@ -26,25 +26,25 @@ let observer: IntersectionObserver | undefined
 
 const projectCountLabel = computed(() => `${props.projectCount} 个精选案例`)
 const heroStyle = computed<Record<string, string>>(() => ({
-  ...themeStyle.value,
-  '--atmo-panel': 'rgb(6 20 27 / 68%)',
+  '--atmo-sky-top': themeStyle.value['--atmo-sky-top'] ?? '#07151c',
+  '--atmo-panel': 'rgb(6 20 27 / 64%)',
   '--atmo-ink': '#effffb',
   '--atmo-muted': '#b5ccc9',
   '--atmo-accent': '#71f7df',
   '--atmo-line': 'rgb(207 255 246 / 20%)',
   '--atmo-focus': '#9effed',
 }))
-const chromeStyle = computed<Record<string, string>>(() => ({
+const chromeStyle: Record<string, string> = {
   '--chrome-bg': '#07151c',
   '--chrome-ink': '#effffb',
   '--chrome-line': 'rgb(207 255 246 / 18%)',
   '--chrome-accent': '#71f7df',
-}))
+}
 
 watch(
-  chromeStyle,
-  (style) => {
-    if (hero.value?.dataset.chromeActive === 'true') emit('chromeState', { active: true, style })
+  themeStyle,
+  () => {
+    if (hero.value?.dataset.chromeActive === 'true') emit('chromeState', { active: true, style: chromeStyle })
   },
   { deep: true },
 )
@@ -59,7 +59,7 @@ onMounted(() => {
     ([entry]) => {
       const active = Boolean(entry?.isIntersecting)
       if (hero.value) hero.value.dataset.chromeActive = String(active)
-      emit('chromeState', { active, style: active ? chromeStyle.value : {} })
+      emit('chromeState', { active, style: active ? chromeStyle : {} })
     },
     { rootMargin: '-64px 0px 0px', threshold: 0 },
   )
@@ -184,12 +184,6 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .weather-hero {
-  --atmo-panel: rgb(6 20 27 / 64%);
-  --atmo-ink: #effffb;
-  --atmo-muted: #b5ccc9;
-  --atmo-accent: #71f7df;
-  --atmo-line: rgb(207 255 246 / 20%);
-  --atmo-focus: #9effed;
   position: relative;
   min-height: calc(100svh - 4rem);
   overflow: hidden;

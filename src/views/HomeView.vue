@@ -23,6 +23,7 @@ useReveal()
 const [aboutLead = '', aboutMore = ''] = about.paragraphs
 const primaryResume = profile.resumes[0]
 const featuredProjects = projects.filter((project) => project.featured)
+const designWorldUrl = `${import.meta.env.BASE_URL}design-world/`
 const selectedProject = ref<Project | null>(null)
 const emailFeedback = ref('复制邮箱')
 const resumeFeedback = ref('下载简历')
@@ -121,6 +122,19 @@ onBeforeUnmount(() => {
 
         <ProjectScrollytelling :projects="featuredProjects" @open-detail="openProject" />
       </div>
+    </section>
+
+    <!-- 交互实验 -->
+    <section class="design-world-band border-b border-line" aria-labelledby="design-world-title">
+      <a :href="designWorldUrl" class="design-world-link mx-auto max-w-[1180px]" data-reveal>
+        <span class="design-world-mark" aria-hidden="true"></span>
+        <span>
+          <span class="mono-label text-paper/55">Interactive experiment / Three.js</span>
+          <strong id="design-world-title">Design World</strong>
+        </span>
+        <span class="design-world-copy">拖动一块折射文字的玻璃，在浏览器里探索实时 Shader。</span>
+        <span class="design-world-action">进入实验 <span aria-hidden="true">↗</span></span>
+      </a>
     </section>
 
     <!-- 做法 -->
@@ -260,6 +274,57 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.design-world-band {
+  background: #050505;
+  color: var(--color-paper);
+}
+
+.design-world-link {
+  display: grid;
+  grid-template-columns: auto minmax(10rem, 0.7fr) minmax(16rem, 1fr) auto;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem 1.5rem;
+  text-decoration: none;
+}
+
+.design-world-mark {
+  width: 1.25rem;
+  height: 2.5rem;
+  border-radius: 0 1.25rem 1.25rem 0;
+  background: currentColor;
+}
+
+.design-world-link strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  letter-spacing: -0.035em;
+}
+
+.design-world-copy {
+  max-width: 29rem;
+  color: color-mix(in srgb, var(--color-paper) 65%, transparent);
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+.design-world-action {
+  white-space: nowrap;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.design-world-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -4px;
+}
+
+.design-world-link:hover .design-world-action {
+  border-bottom-color: transparent;
+}
+
 .metrics-band {
   background: #eef1eb;
 }
@@ -294,6 +359,21 @@ onBeforeUnmount(() => {
   font-size: 2rem;
   line-height: 1;
   color: rgb(18 63 59 / 12%);
+}
+
+@media (max-width: 767px) {
+  .design-world-link {
+    grid-template-columns: auto 1fr;
+  }
+
+  .design-world-copy,
+  .design-world-action {
+    grid-column: 2;
+  }
+
+  .design-world-action {
+    justify-self: start;
+  }
 }
 
 @media (min-width: 768px) {

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#061118">
+  <meta name="description" content="Explore new ideas in a rotatable glass world inspired by the portfolio atmosphere.">
+  <title>Design World — Explore New Ideas</title>
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <section class="hero" id="hero">
+    <canvas id="scene" aria-label="Rotatable glass cube. Drag to rotate."></canvas>
+    <div class="ui">
+      <h1 class="sr-only">Explore New Ideas</h1>
+      <header class="nav">
+        <a href="../" class="logo" aria-label="Design World home"><i class="logo-mark" aria-hidden="true"></i><b>Design</b><span>World</span></a>
+        <ul class="nav-links"><li><a href="../">Home</a></li><li><a href="../#work">Portfolio</a></li><li><a href="../#contact">Contact Us</a></li></ul>
+      </header>
+      <div class="arrows">
+        <button class="arrow" id="prev" type="button" aria-label="Rotate cube left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        </button>
+        <button class="arrow" id="next" type="button" aria-label="Rotate cube right">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <nav class="dots" aria-label="Slides"><button class="dot" type="button" aria-label="Slide 1"></button><button class="dot active" type="button" aria-label="Slide 2" aria-current="true"></button><button class="dot" type="button" aria-label="Slide 3"></button></nav>
+      <p class="tagline">Let's Build the<br>Future of <strong>Design.</strong></p>
+      <div class="cta-row">
+        <a href="../#work" class="cta">Explore Now</a>
+        <span class="cta-line"></span>
+        <span class="count" aria-hidden="true">07</span>
+      </div>
+      <div class="loader" id="loader" role="status" aria-live="polite">Preparing scene</div>
+    </div>
+  </section>
+  <script type="module" src="/src/design-world/main.js"></script>
+</body>
+</html>
